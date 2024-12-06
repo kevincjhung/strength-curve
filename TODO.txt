@@ -1,0 +1,29 @@
+# Planning and sprints
+
+## What you are working on atm
+
+- finish defining the terms
+- finalize schema 
+- figure out which API endpoints to have, and its features
+- figure out which pages to have, and its features
+- write the api
+- write the pages
+- write the functions that adjust load
+
+## MVP
+
+For the MVP, it should
+  - show you a single workout plan, in a single page 
+  - when you click on a workout, it takes you to a page, with a list of exercises
+  - when you click on an exercise, it takes you to a separate page with a form 
+    - the page tells you how much and what load. 
+    - Go AMRAP. the app calculates and adjusts the load accordingly
+    - You type in the weight and the number of reps you did on the last set. 
+  - whenever you load the workout page, it tells you to 
+
+
+## Details and setup
+- jest
+- MaterialUI
+- prisma
+- connection to local and cloud database
