@@ -72,9 +72,6 @@ upper day 1
   bench press   | 205 lbs | numberOfSets: 3 | numberOfReps : 10
   lat pulldown  | 205 lbs | numberOfSets: 3 | numberOfReps : 8
 
-lower day 2
-  ...
-  ...
 -----
 
 "4 day - upper lower split" is your "workout_plan"

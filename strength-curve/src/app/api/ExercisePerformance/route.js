@@ -8,12 +8,6 @@ export async function GET() {
       FROM "ExercisePerformance";
     `;
 
-
-    if (!exercisePerformances) {
-      throw new Error('No data found in ExercisePerformance table');
-    }
-
-    // Return the data as JSON
     return new Response(JSON.stringify({ data: exercisePerformances }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -21,9 +15,8 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching ExercisePerformance:', error);
 
-    // Fixing the error response structure by ensuring it's an object
     return new Response(
-      JSON.stringify({ error: error.message || 'Internal Server Error' }), // Ensure it's an object
+      JSON.stringify({ error: error.message || 'Internal Server Error' }),
       {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
