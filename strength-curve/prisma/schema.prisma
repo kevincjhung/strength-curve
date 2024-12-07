@@ -13,8 +13,11 @@ datasource db {
   url      = env("LOCAL_PG_URL")
 }
 
+
+
 model ExercisePerformance {
   id    Int     @id @default(autoincrement())
   name  String
   estimatedOneRepMaxInLbs Int
+  timeOfLastUpdate  DateTime @default(now())
 }

@@ -1,27 +1,35 @@
 import { prisma } from '../../../../prisma/prismaClient'; // Make sure this is correct based on your project structure
 
-export async function GET(request) {
+
+export async function GET() {
   try {
-    const exercises = await prisma.exercisePerformance.findMany(); // Correct model name
+    const exercisePerformances = await prisma.$queryRaw`
+      SELECT * 
+      FROM "ExercisePerformance";
+    `;
 
-    return new Response(
-      JSON.stringify(exercises), // Return the fetched exercises
-      {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      }
-    );
+
+    if (!exercisePerformances) {
+      throw new Error('No data found in ExercisePerformance table');
+    }
+
+    // Return the data as JSON
+    return new Response(JSON.stringify({ data: exercisePerformances }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (error) {
-    console.error("Error fetching exercises:", error);
+    console.error('Error fetching ExercisePerformance:', error);
 
+    // Fixing the error response structure by ensuring it's an object
     return new Response(
-      JSON.stringify({ error: "Failed to fetch exercises" }),
+      JSON.stringify({ error: error.message || 'Internal Server Error' }), // Ensure it's an object
       {
-        headers: { "Content-Type": "application/json" },
         status: 500,
+        headers: { 'Content-Type': 'application/json' },
       }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
-
-// TODO: finish the GET route for read all from Table "ExercisePerformance"
