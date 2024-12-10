@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,9 +7,95 @@ datasource db {
   url      = env("LOCAL_PG_URL")
 }
 
-model ExercisePerformance {
-  id    Int     @id @default(autoincrement())
-  name  String
-  estimatedOneRepMaxInLbs Int
-  timeOfLastUpdate  DateTime @default(now())
+model WorkoutPlan {
+  workout_plan_id  Int               @id @default(autoincrement())
+  name             String            @db.VarChar(255)
+  description      String?
+  userWorkoutPlans UserWorkoutPlan[]
+  workouts         Workout[]
+
+  @@map("workout_plans")
+}
+
+model Workout {
+  workout_id       Int               @id @default(autoincrement())
+  name             String            @db.VarChar(255)
+  workout_plan_id  Int
+  workoutInstances WorkoutInstance[]
+  workoutPlan      WorkoutPlan       @relation(fields: [workout_plan_id], references: [workout_plan_id])
+
+  @@map("workouts")
+}
+
+model WorkoutInstance {
+  workout_instance_id Int        @id @default(autoincrement())
+  name                String     @db.VarChar(255)
+  workout_id          Int
+  date                DateTime   @default(now())
+  exercises           Exercise[]
+  workout             Workout    @relation(fields: [workout_id], references: [workout_id])
+
+  @@map("workout_instances")
+}
+
+model Exercise {
+  exercise_id         Int                   @id @default(autoincrement())
+  name                String                @db.VarChar(255)
+  load_lbs            Int?
+  sets                Int?
+  reps                Int?
+  rpe                 Int?
+  rest_minutes        Int?
+  exercise_notes      String?
+  workout_instance_id Int
+  estimatedOnerm      EstimatedOnerm?
+  progressLogs        ExerciseProgressLog[]
+  workoutInstance     WorkoutInstance       @relation(fields: [workout_instance_id], references: [workout_instance_id])
+
+  @@map("exercises")
+}
+
+model ExerciseProgressLog {
+  log_id               Int      @id @default(autoincrement())
+  exercise_id          Int
+  log_date             DateTime @default(now())
+  measured_onerm_lbs   Int?
+  user_deload_flag     Boolean  @default(false)
+  periodic_deload_flag Boolean  @default(false)
+  notes                String?
+  exercise             Exercise @relation(fields: [exercise_id], references: [exercise_id])
+
+  @@map("exercise_progress_logs")
+}
+
+model EstimatedOnerm {
+  estimate_id         Int      @id @default(autoincrement())
+  exercise_id         Int      @unique
+  estimate_date       DateTime @default(now())
+  estimated_onerm_lbs Int
+  method              String?
+  exercise            Exercise @relation(fields: [exercise_id], references: [exercise_id])
+
+  @@map("estimated_onerms")
+}
+
+model User {
+  user_id          Int               @id @default(autoincrement())
+  username         String            @unique
+  email            String            @unique
+  created_at       DateTime          @default(now())
+  userWorkoutPlans UserWorkoutPlan[]
+
+  @@map("users")
+}
+
+model UserWorkoutPlan {
+  user_workout_plan_id Int         @id @default(autoincrement())
+  user_id              Int
+  workout_plan_id      Int
+  start_date           DateTime    @default(now())
+  user                 User        @relation(fields: [user_id], references: [user_id])
+  workoutPlan          WorkoutPlan @relation(fields: [workout_plan_id], references: [workout_plan_id])
+
+  @@map("user_workout_plans")
 }
