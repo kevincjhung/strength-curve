@@ -4,7 +4,7 @@ export default function Home() {
       <main>
         <div>
           <p>
-            text here
+            Home Page
           </p>
         </div>
       </main>
