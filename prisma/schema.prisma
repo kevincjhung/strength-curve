@@ -7,95 +7,76 @@ datasource db {
   url      = env("LOCAL_PG_URL")
 }
 
-model WorkoutPlan {
-  workout_plan_id  Int               @id @default(autoincrement())
-  name             String            @db.VarChar(255)
-  description      String?
-  userWorkoutPlans UserWorkoutPlan[]
-  workouts         Workout[]
+model User {
+  id        Int              @id @default(autoincrement()) @map("user_id")
+  username  String           @unique
+  email     String           @unique
+  createdAt DateTime         @default(now()) @map("created_at")
+  workoutPlans  WorkoutPlan[]
+}
 
-  @@map("workout_plans")
+model WorkoutPlan {
+  id          Int       @id @default(autoincrement()) @map("workout_plan_id")
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  userId      Int
+  user        User       @relation(fields: [userId], references: [id])
+  workouts    Workout[]
 }
 
 model Workout {
-  workout_id       Int               @id @default(autoincrement())
-  name             String            @db.VarChar(255)
-  workout_plan_id  Int
-  workoutInstances WorkoutInstance[]
-  workoutPlan      WorkoutPlan       @relation(fields: [workout_plan_id], references: [workout_plan_id])
-
-  @@map("workouts")
+  id          Int               @id @default(autoincrement()) @map("workout_id")
+  name        String            @db.VarChar(255)
+  workoutPlanId Int             @map("workout_plan_id")
+  workoutPlan WorkoutPlan       @relation(fields: [workoutPlanId], references: [id])
+  instances   WorkoutInstance[]
+  sets        WorkoutSet[]
 }
 
 model WorkoutInstance {
-  workout_instance_id Int        @id @default(autoincrement())
-  name                String     @db.VarChar(255)
-  workout_id          Int
-  date                DateTime   @default(now())
-  exercises           Exercise[]
-  workout             Workout    @relation(fields: [workout_id], references: [workout_id])
-
-  @@map("workout_instances")
+  id         Int         @id @default(autoincrement()) @map("workout_instance_id")
+  workoutId  Int         @map("workout_id")
+  workout    Workout     @relation(fields: [workoutId], references: [id])
+  date       DateTime    @default(now())
 }
 
-model Exercise {
-  exercise_id         Int                   @id @default(autoincrement())
-  name                String                @db.VarChar(255)
-  load_lbs            Int?
-  sets                Int?
-  reps                Int?
-  rpe                 Int?
-  rest_minutes        Int?
-  exercise_notes      String?
-  workout_instance_id Int
-  estimatedOnerm      EstimatedOnerm?
-  progressLogs        ExerciseProgressLog[]
-  workoutInstance     WorkoutInstance       @relation(fields: [workout_instance_id], references: [workout_instance_id])
+model WorkoutSet {
+  id          Int         @id @default(autoincrement()) @map("workout_set_id")
+  workoutId   Int         @map("workout_id")
+  workout     Workout     @relation(fields: [workoutId], references: [id])
+  movementId  Int         @map("movement_id")
+  movement    Movement    @relation(fields: [movementId], references: [id])
+  sets        Int
+  reps        Int
+  loadLbs     Int?        @map("load_lbs")
+  restMinutes Int?        @map("rest_minutes")
+}
 
-  @@map("exercises")
+model Movement {
+  id       Int                @id @default(autoincrement()) @map("movement_id")
+  name     String             @db.VarChar(255)
+  category String?
+  sets     WorkoutSet[]
+  estimates EstimatedOneRm[]
+  logs     ExerciseProgressLog[]
+}
+
+model EstimatedOneRm {
+  id               Int         @id @default(autoincrement()) @map("estimate_id")
+  movementId       Int         @unique @map("movement_id")
+  movement         Movement    @relation(fields: [movementId], references: [id])
+  estimateDate     DateTime    @default(now()) @map("estimate_date")
+  estimatedOneRmLbs Int        @map("estimated_onerm_lbs")
+  method           String?
 }
 
 model ExerciseProgressLog {
-  log_id               Int      @id @default(autoincrement())
-  exercise_id          Int
-  log_date             DateTime @default(now())
-  measured_onerm_lbs   Int?
-  user_deload_flag     Boolean  @default(false)
-  periodic_deload_flag Boolean  @default(false)
-  notes                String?
-  exercise             Exercise @relation(fields: [exercise_id], references: [exercise_id])
-
-  @@map("exercise_progress_logs")
-}
-
-model EstimatedOnerm {
-  estimate_id         Int      @id @default(autoincrement())
-  exercise_id         Int      @unique
-  estimate_date       DateTime @default(now())
-  estimated_onerm_lbs Int
-  method              String?
-  exercise            Exercise @relation(fields: [exercise_id], references: [exercise_id])
-
-  @@map("estimated_onerms")
-}
-
-model User {
-  user_id          Int               @id @default(autoincrement())
-  username         String            @unique
-  email            String            @unique
-  created_at       DateTime          @default(now())
-  userWorkoutPlans UserWorkoutPlan[]
-
-  @@map("users")
-}
-
-model UserWorkoutPlan {
-  user_workout_plan_id Int         @id @default(autoincrement())
-  user_id              Int
-  workout_plan_id      Int
-  start_date           DateTime    @default(now())
-  user                 User        @relation(fields: [user_id], references: [user_id])
-  workoutPlan          WorkoutPlan @relation(fields: [workout_plan_id], references: [workout_plan_id])
-
-  @@map("user_workout_plans")
+  id                Int         @id @default(autoincrement()) @map("log_id")
+  movementId        Int?        @map("movement_id")
+  movement          Movement?   @relation(fields: [movementId], references: [id])
+  logDate           DateTime    @default(now()) @map("log_date")
+  measuredOneRmLbs  Int?        @map("measured_onerm_lbs")
+  userDeloadFlag    Boolean     @default(false) @map("user_deload_flag")
+  periodicDeloadFlag Boolean    @default(false) @map("periodic_deload_flag")
+  notes             String?
 }
