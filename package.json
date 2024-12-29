@@ -10,6 +10,7 @@
     "test": "jest",
     "test:watch": "jest --watch"
   },
+  "type": "module",
   "dependencies": {
     "@prisma/client": "^6.0.1",
     "@testing-library/jest-dom": "^6.6.3",

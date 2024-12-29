@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 beforeAll(async () => {
   // Seed the database with sample users before tests
-  await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE;`;
+  await prisma.$executeRaw`TRUNCATE TABLE "users" RESTART IDENTITY CASCADE;`;
   await prisma.user.createMany({
     data: [
       { username: 'toussaintlouverture', email: 'toussaint.louverture@gmail.com' },
@@ -16,11 +16,11 @@ beforeAll(async () => {
 
 afterAll(async () => {
   // Clean up the database after tests
-  await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE;`;
+  await prisma.$executeRaw`TRUNCATE TABLE "users" RESTART IDENTITY CASCADE;`;
   await prisma.$disconnect();
 });
 
-test('should return three users from the database', async () => {
+it('should return three users from the database', async () => {
   const users = await prisma.user.findMany();
   expect(users).toHaveLength(3);
 

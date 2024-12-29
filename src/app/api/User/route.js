@@ -3,7 +3,6 @@ import { prisma } from '../../../../prisma/prismaClient';
 import { NextResponse } from 'next/server';
 
 
-// Named export for handling GET requests
 export async function GET(req) {
   try {
     // Fetch all users from the User table

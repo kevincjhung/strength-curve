@@ -1,14 +1,26 @@
-import { prisma } from '../../../../prisma/prismaClient'; 
+import { prisma } from '../../../../prisma/prismaClient';
 
 import { NextResponse } from 'next/server';
- 
+
 
 // /api/workout_plans
 export async function GET(req) {
   try {
-     const workout_plans = await prisma.$queryRaw`SELECT * FROM workout_plans`;
+    // Query workout plans from the database
+    const workout_plans = await prisma.workoutPlan.findMany({
+      include: {
+        workouts: {
+          include: {
+            sets: {
+              include: {
+                movement: true, // Include movement details for each set
+              },
+            },
+          },
+        },
+      },
+    });
 
-    // Return the workout_plans as a JSON response using NextResponse
     return NextResponse.json(workout_plans);
   } catch (error) {
     // Handle any errors and respond with a 500 status code using NextResponse
@@ -17,18 +29,60 @@ export async function GET(req) {
   }
 }
 
-// Named export for handling other HTTP methods (e.g., POST, PUT, DELETE)
 export async function POST(req) {
+  // extract all of the movements, trim leading ending whitespace and lowercase. enter into db if it doesn't already exist
 
-  return NextResponse.json({ error: 'Method Not Allowed' }, { status: 405 });
-}
+  // then when you insert the plan, you have the correct movement id
 
-export async function PUT(req) {
-  
-  return NextResponse.json({ error: 'Method Not Allowed' }, { status: 405 });
-}
+  try {
+    const newWorkoutPlan = await prisma.workoutPlan.create({
+      data: {
+        name: "",
+        description: "A general 4 day upper lower split workout plan focused on compound movements",
+        userId: 2,
+        workouts: {
+          create: [
+            {
+              name: "upper day 1",
+              sets: {
+                create: [
+                  {
+                    sets: 1,
+                    reps: 2,
+                    loadLbs: 3,
+                    restMinutes: 4
+                  },
+                  {
+                    sets: 2,
+                    reps: 3,
+                    loadLbs: 4,
+                    restMinutes: 5
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    });
 
-export async function DELETE(req) {
-  
-  return NextResponse.json({ error: 'Method Not Allowed' }, { status: 405 });
+    
+
+
+    // Return the newly created workoutPlan
+    return NextResponse.json({ workoutPlan: newWorkoutPlan }, { status: 201 });
+
+  } catch (error) {
+    // Log detailed error for debugging
+    console.error(error.message);
+
+    // Check if the error is valid before returning the response
+    const errorResponse = {
+      error: 'Failed to create workout plan',
+      details: error?.message || 'No additional error details available',
+    };
+
+    // Return the error response as JSON
+    return NextResponse.json(errorResponse, { status: 500 });
+  }
 }

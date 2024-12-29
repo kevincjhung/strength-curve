@@ -1,3 +1,4 @@
+// TODO: after MVP development, add null constraints
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,47 +10,57 @@ datasource db {
 
 model User {
   id        Int              @id @default(autoincrement()) @map("user_id")
-  username  String           @unique
-  email     String           @unique
+  username  String           @unique @map("username")
+  email     String           @unique @map("email")
   createdAt DateTime         @default(now()) @map("created_at")
   workoutPlans  WorkoutPlan[]
+  
+  @@map("users")
 }
 
 model WorkoutPlan {
   id          Int       @id @default(autoincrement()) @map("workout_plan_id")
-  name        String    @db.VarChar(255)
-  description String?   @db.Text
-  userId      Int
-  user        User       @relation(fields: [userId], references: [id])
+  name        String    @db.VarChar(255) @map("name")
+  description String?   @db.Text @map("description")
+  userId      Int?       @map("user_id")
+  user        User?      @relation(fields: [userId], references: [id])
   workouts    Workout[]
+
+  @@map("workout_plans")
 }
 
 model Workout {
   id          Int               @id @default(autoincrement()) @map("workout_id")
-  name        String            @db.VarChar(255)
-  workoutPlanId Int             @map("workout_plan_id")
-  workoutPlan WorkoutPlan       @relation(fields: [workoutPlanId], references: [id])
+  name        String            @db.VarChar(255) @map("name")
+  workoutPlanId Int?             @map("workout_plan_id")
+  workoutPlan WorkoutPlan?       @relation(fields: [workoutPlanId], references: [id])
   instances   WorkoutInstance[]
   sets        WorkoutSet[]
+
+  @@map("workouts")
 }
 
 model WorkoutInstance {
   id         Int         @id @default(autoincrement()) @map("workout_instance_id")
-  workoutId  Int         @map("workout_id")
-  workout    Workout     @relation(fields: [workoutId], references: [id])
-  date       DateTime    @default(now())
+  workoutId  Int?         @map("workout_id")
+  workout    Workout?     @relation(fields: [workoutId], references: [id])
+  date       DateTime    @default(now()) @map("date")
+
+  @@map("workout_instances")
 }
 
 model WorkoutSet {
   id          Int         @id @default(autoincrement()) @map("workout_set_id")
-  workoutId   Int         @map("workout_id")
-  workout     Workout     @relation(fields: [workoutId], references: [id])
-  movementId  Int         @map("movement_id")
-  movement    Movement    @relation(fields: [movementId], references: [id])
-  sets        Int
-  reps        Int
+  workoutId   Int?         @map("workout_id")
+  workout     Workout?     @relation(fields: [workoutId], references: [id])
+  movementId  Int?         @map("movement_id")
+  movement    Movement?    @relation(fields: [movementId], references: [id])
+  sets        Int         @map("sets")
+  reps        Int         @map("reps")
   loadLbs     Int?        @map("load_lbs")
   restMinutes Int?        @map("rest_minutes")
+
+  @@map("workout_sets")
 }
 
 model Movement {
@@ -59,15 +70,19 @@ model Movement {
   sets     WorkoutSet[]
   estimates EstimatedOneRm[]
   logs     ExerciseProgressLog[]
+
+  @@map("movements")
 }
 
 model EstimatedOneRm {
   id               Int         @id @default(autoincrement()) @map("estimate_id")
-  movementId       Int         @unique @map("movement_id")
-  movement         Movement    @relation(fields: [movementId], references: [id])
+  movementId       Int?         @unique @map("movement_id")
+  movement         Movement?    @relation(fields: [movementId], references: [id])
   estimateDate     DateTime    @default(now()) @map("estimate_date")
   estimatedOneRmLbs Int        @map("estimated_onerm_lbs")
-  method           String?
+  method           String?     @map("method")
+
+  @@map("estimated_one_rms")
 }
 
 model ExerciseProgressLog {
@@ -78,5 +93,7 @@ model ExerciseProgressLog {
   measuredOneRmLbs  Int?        @map("measured_onerm_lbs")
   userDeloadFlag    Boolean     @default(false) @map("user_deload_flag")
   periodicDeloadFlag Boolean    @default(false) @map("periodic_deload_flag")
-  notes             String?
+  notes             String?     @map("notes")
+
+  @@map("exercise_progress_logs")
 }
