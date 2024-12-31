@@ -26,8 +26,6 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     const { name, workoutPlanId } = await req.json(); // Assuming request body contains `name` and `workoutPlanId`
-    // let name = "Upper day 1";
-    // let workoutPlanId = 1;
 
 
     // Check if the required fields are provided
