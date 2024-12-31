@@ -175,13 +175,3 @@ export async function seedWorkoutPlans() {
     console.error(error);
   }
 }
-
-
-async function seedApp() {
-  await resetAppDataTables();
-  await seedUsers();
-  await seedMovements();
-  await seedWorkoutPlans();
-}
-
-seedApp();
