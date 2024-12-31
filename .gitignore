@@ -39,9 +39,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+NOTES_TODOS
 
-NOTES.md
-TODO.*
-.env
 
-NAMING_CONVENTIONS.txt
