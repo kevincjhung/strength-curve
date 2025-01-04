@@ -3,7 +3,8 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 beforeAll(async () => {
-  // Seed the database with sample users before tests
+  // TODO: Replace with seed functions and resetDatabase functions from 'utils/*' directory
+  
   await prisma.$executeRaw`TRUNCATE TABLE "users" RESTART IDENTITY CASCADE;`;
   await prisma.user.createMany({
     data: [

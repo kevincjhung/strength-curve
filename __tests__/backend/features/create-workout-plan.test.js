@@ -9,14 +9,6 @@ beforeAll(async () => {
   await prisma.$executeRaw`TRUNCATE TABLE "workouts" RESTART IDENTITY CASCADE;`;
   await prisma.$executeRaw`TRUNCATE TABLE "workout_sets" RESTART IDENTITY CASCADE;`;
   await prisma.$executeRaw`TRUNCATE TABLE "movements" RESTART IDENTITY CASCADE;`;
-
-  // await prisma.user.createMany({
-  //   data: [
-  //     { username: 'toussaintlouverture', email: 'toussaint.louverture@gmail.com' },
-  //     { username: 'emilianozapata', email: 'emiliano.zapata@gmail.com' },
-  //     { username: 'simonbolivar', email: 'simon.bolivar@gmail.com' },
-  //   ],
-  // });
 });
 
 afterAll(async () => {

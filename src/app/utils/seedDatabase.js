@@ -1,8 +1,18 @@
 import { prisma } from '../../../prisma/prismaClient.js';
-import { movements } from './exerciseNames.js'
+import { movements } from '../../../data/movementData.js'
+import { userSeedData } from '../../../data/userData.js';
 
 
-// Resets the app's data tables by truncating all data and resetting identities.
+/**
+ * Resets all application data tables by truncating their contents and resetting identities.
+ * 
+ * Fetches user-defined tables in the public schema and truncates each, excluding system tables. 
+ * Also truncates critical tables collectively for efficiency.
+ *
+ * @async
+ * @function resetAppDataTables
+ * @returns {Promise<void>} Resolves on successful reset, logs errors on failure.
+ */
 async function resetAppDataTables() {
   try {
     // Query to get a list of all user-defined tables from the public schema,excluding system tables 
@@ -36,24 +46,40 @@ async function resetAppDataTables() {
   }
 }
 
-// Seeds the application with a set of initial user data.
+/**
+ * Seeds the database with user data.
+ * 
+ * Inserts predefined user data into the database using Prisma's `createMany` method.
+ *
+ * @async
+ * @function seedUsers
+ * @returns {Promise<void>} Resolves when user data is successfully seeded.
+ * @throws {Error} Logs an error if the seeding process fails.
+ */
 async function seedUsers() {
   try {
+    console.log(userSeedData)
     await prisma.user.createMany({
-      data: [
-        { username: 'toussaintlouverture', email: 'toussaint.louverture@gmail.com' },
-        { username: 'emilianozapata', email: 'emiliano.zapata@gmail.com' },
-        { username: 'simonbolivar', email: 'simon.bolivar@gmail.com' },
-      ],
+      data: userSeedData
     });
-
+    
     console.log('Users seeded successfully.');
   } catch (error) {
     console.error('Error seeding users:', error);
   }
 }
 
-// Seeds the movements data into the database.
+/**
+ * Seeds the database with movement data.
+ * 
+ * Iterates through a predefined list of movements and inserts each into the database, 
+ * assigning a unique ID to each entry.
+ *
+ * @async
+ * @function seedMovements
+ * @returns {Promise<void>} Resolves when movements are successfully seeded.
+ * @throws {Error} Logs an error if the seeding process fails.
+ */
 async function seedMovements() {
   try {
     await Promise.all(movements.map((movement, i) => {
@@ -69,11 +95,13 @@ async function seedMovements() {
   }
 }
 
+
 // Utility function to fetch movements and create a map of names to IDs
 async function getMovementIdMap() {
   const movements = await prisma.movement.findMany();
   return new Map(movements.map(movement => [movement.name.toLowerCase(), movement.id]));
 }
+
 
 // Utility function to validate movements and return missing ones
 function findMissingMovements(workoutMovements, movementIdMap) {
@@ -175,3 +203,12 @@ export async function seedWorkoutPlans() {
     console.error(error);
   }
 }
+
+
+async function seed(){
+  await resetAppDataTables();
+  await seedUsers();
+  await seedMovements();
+}
+
+seed();
