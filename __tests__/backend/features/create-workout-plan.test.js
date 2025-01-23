@@ -3,22 +3,11 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 beforeAll(async () => {
-  // Truncate and reset related tables
-  await prisma.$executeRaw`TRUNCATE TABLE "users" RESTART IDENTITY CASCADE;`;
-  await prisma.$executeRaw`TRUNCATE TABLE "workout_plans" RESTART IDENTITY CASCADE;`;
-  await prisma.$executeRaw`TRUNCATE TABLE "workouts" RESTART IDENTITY CASCADE;`;
-  await prisma.$executeRaw`TRUNCATE TABLE "workout_sets" RESTART IDENTITY CASCADE;`;
-  await prisma.$executeRaw`TRUNCATE TABLE "movements" RESTART IDENTITY CASCADE;`;
+  // TODO: Add resetDatabase function after 
 });
 
 afterAll(async () => {
   // Clean up the database after tests
-  await prisma.$executeRaw`TRUNCATE TABLE "users" RESTART IDENTITY CASCADE;`;
-  await prisma.$executeRaw`TRUNCATE TABLE "workout_plans" RESTART IDENTITY CASCADE;`;
-  await prisma.$executeRaw`TRUNCATE TABLE "workouts" RESTART IDENTITY CASCADE;`;
-  await prisma.$executeRaw`TRUNCATE TABLE "workout_sets" RESTART IDENTITY CASCADE;`;
-  await prisma.$executeRaw`TRUNCATE TABLE "movements" RESTART IDENTITY CASCADE;`;
-
   await prisma.$disconnect();
 });
 
