@@ -1,51 +1,10 @@
-import { prisma } from '../../../prisma/prismaClient.js';
-import { movements } from '../../../data/movementData.js'
-import { userSeedData } from '../../../data/userData.js';
-import { upper_lower_4_day } from '../../../data/workoutPlanData.js';
+import { prisma } from '../../../../prisma/prismaClient.js';
+import { movements } from '../../../../data/movementData.js'
+import { userSeedData } from '../../../../data/userData.js';
+import { upper_lower_4_day } from '../../../../data/workoutPlanData.js';
+import { resetAppDataTables } from './queries.js';
 
 
-/**
- * Resets all application data tables by truncating their contents and resetting identities.
- * 
- * Fetches user-defined tables in the public schema and truncates each, excluding system tables. 
- * Also truncates critical tables collectively for efficiency.
- *
- * @async
- * @function resetAppDataTables
- * @returns {Promise<void>} Resolves on successful reset, logs errors on failure.
- */
-async function resetAppDataTables() {
-  try {
-    // Query to get a list of all user-defined tables from the public schema,excluding system tables 
-    const tables = await prisma.$queryRaw`
-      SELECT table_name
-      FROM information_schema.tables
-      WHERE table_schema = 'public'
-      AND table_name NOT LIKE 'pg_%' 
-      AND table_name NOT LIKE 'information_schema%'`;
-
-    // Iterate through each table name and truncate it to reset the data.
-    for (const { table_name: table } of tables) {
-      const query = `TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE;`;
-
-      // Execute the raw query to truncate the table
-      await prisma.$executeRawUnsafe(query);
-
-      console.log(`Table '${table}' truncated and identity reset.`);
-    }
-
-    // Truncate specific critical tables in one go for performance efficiency.
-    await prisma.$queryRaw`
-      TRUNCATE TABLE 
-        users, workout_plans, workouts, workout_instances, 
-        workout_sets, movements, estimated_one_rms, exercise_progress_logs 
-      RESTART IDENTITY;`;
-
-    console.log('App data tables reset successfully.');
-  } catch (error) {
-    console.error('Error resetting app data tables:', error);
-  }
-}
 
 /**
  * Seeds the database with user data.
@@ -57,7 +16,7 @@ async function resetAppDataTables() {
  * @returns {Promise<void>} Resolves when user data is successfully seeded.
  * @throws {Error} Logs an error if the seeding process fails.
  */
-async function seedUsers() {
+export async function seedUsers() {
   try {
     console.log(userSeedData)
     await prisma.user.createMany({
@@ -70,6 +29,7 @@ async function seedUsers() {
   }
 }
 
+
 /**
  * Seeds the database with movement data.
  * 
@@ -81,7 +41,7 @@ async function seedUsers() {
  * @returns {Promise<void>} Resolves when movements are successfully seeded.
  * @throws {Error} Logs an error if the seeding process fails.
  */
-async function seedMovements() {
+export async function seedMovements() {
   try {
     await Promise.all(movements.map((movement, i) => {
       return prisma.movement.create({
@@ -102,8 +62,6 @@ async function getMovementIdMap() {
   const movements = await prisma.movement.findMany();
   return new Map(movements.map(movement => [movement.name.toLowerCase(), movement.id]));
 }
-
-
 
 
 export async function seedWorkoutPlans() {
@@ -140,18 +98,21 @@ export async function seedWorkoutPlans() {
     });
 
     return newWorkoutPlan;
-
-
   } catch (error) {
     console.error(error);
   }
 }
 
-
-async function seed(){
+/**
+ * TODO: 
+ * Seeds database completely, including your current training plan, and mockup training-log data.
+ * 
+ * ! IMPORTANT: Will wipe existing data in database before seeding everything
+ * 
+ * @returns 
+ */
+export async function seedAll() {
   await resetAppDataTables();
-  await seedUsers();
-  await seedMovements();
+
+  return 
 }
-seedWorkoutPlans()
-// seed();

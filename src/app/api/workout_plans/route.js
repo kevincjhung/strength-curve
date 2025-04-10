@@ -1,7 +1,7 @@
 import { prisma } from '../../../../prisma/prismaClient';
 
 import { NextResponse } from 'next/server';
-import { seedWorkoutPlans } from '../../utils/seedDatabase.js';
+import { seedWorkoutPlans } from '../../utils/database/seeds.js';
 
 
 // /api/workout_plans

@@ -1,5 +1,5 @@
 export const userSeedData = [
-  { "username": "francisco.deOrellana", "email": "francisco.deOrellana@gmail.com" },
-  { "username": "ferdinand.magellan", "email": "ferdinand.magellan@gmail.com" },
-  { "username": "simon.bolivar", "email": "simon.bolivar@gmail.com" }
+  { "username": "alice", "email": "alice@email.com" },
+  { "username": "bob", "email": "bob@email.com" },
+  { "username": "charlie", "email": "charlie@email.com" }
 ]

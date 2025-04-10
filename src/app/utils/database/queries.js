@@ -94,3 +94,4 @@ export async function insertMovements (movements){
     throw error; // Re-throw the error for the caller to handle
   }
 }
+

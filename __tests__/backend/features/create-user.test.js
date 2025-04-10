@@ -1,24 +1,22 @@
 import { PrismaClient } from '@prisma/client';
+import { resetAppDataTables } from '@/app/utils/database/queries'
+import { seedUsers } from '@/app/utils/database/seeds'
+
 
 const prisma = new PrismaClient();
 
 beforeAll(async () => {
-  // TODO: Replace with seed functions and resetDatabase functions from 'utils/*' directory
-  
-  await prisma.$executeRaw`TRUNCATE TABLE "users" RESTART IDENTITY CASCADE;`;
-  await prisma.user.createMany({
-    data: [
-      { username: 'toussaintlouverture', email: 'toussaint.louverture@gmail.com' },
-      { username: 'emilianozapata', email: 'emiliano.zapata@gmail.com' },
-      { username: 'simonbolivar', email: 'simon.bolivar@gmail.com' },
-    ],
-  });
+  await resetAppDataTables();
+  await seedUsers();
 });
 
+
 afterAll(async () => {
-  // Clean up the database after tests
-  await prisma.$executeRaw`TRUNCATE TABLE "users" RESTART IDENTITY CASCADE;`;
-  await prisma.$disconnect();
+  try {
+    await resetAppDataTables();
+  } finally {
+    await prisma.$disconnect();
+  }
 });
 
 it('should return three users from the database', async () => {
@@ -27,9 +25,9 @@ it('should return three users from the database', async () => {
 
   expect(users).toEqual(
     expect.arrayContaining([
-      expect.objectContaining({ username: 'toussaintlouverture', email: 'toussaint.louverture@gmail.com' }),
-      expect.objectContaining({ username: 'emilianozapata', email: 'emiliano.zapata@gmail.com' }),
-      expect.objectContaining({ username: 'simonbolivar', email: 'simon.bolivar@gmail.com' }),
+      expect.objectContaining({ username: "alice", "email": "alice@email.com"  }),
+      expect.objectContaining({ username: "bob", email: "bob@email.com" }),
+      expect.objectContaining({ username: 'charlie', email: 'charlie@email.com' }),
     ])
   );
 });
