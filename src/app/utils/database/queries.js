@@ -1,5 +1,5 @@
 import { prisma } from '../../../../prisma/prismaClient.js';
-
+import { movementSeedData } from '../../../../data/movementData.js';
 
 /**
  * Resets all application data tables in the public schema by truncating them,
@@ -28,8 +28,6 @@ export async function resetAppDataTables() {
 
       // Execute the raw query to truncate the table
       await prisma.$executeRawUnsafe(query);
-
-      console.log(`Table '${table}' truncated and identity reset.`);
     }
 
     // Truncate specific critical tables in one go for performance efficiency.
@@ -38,8 +36,6 @@ export async function resetAppDataTables() {
         users, workout_plans, workouts, workout_instances, 
         workout_sets, movements, estimated_one_rms, exercise_progress_logs 
       RESTART IDENTITY;`;
-
-    console.log('App data tables reset successfully.');
   } catch (error) {
     console.error('Error resetting app data tables:', error);
   }
@@ -80,18 +76,15 @@ export async function insertUsers(users) {
  * @param {Array<{ name: string, id: number }>} movements - Array of movement objects to insert.
  * @throws {Error} If the database operation fails.
  */
-export async function insertMovements (movements){
+export async function insertMovements (movementData){
  try {
-    const results = await Promise.all(movements.map(movement => {
+    await Promise.all(movementSeedData.map(movement => {
       return prisma.movement.create({
         data: movement,
       });
     }));
-    // console.log('Movements inserted successfully.');
-    console.log(results)
   } catch (error) {
-    console.error('Error inserting movements:', error);
+    console.error('Error inserting movementSeedData:', error);
     throw error; // Re-throw the error for the caller to handle
   }
 }
-

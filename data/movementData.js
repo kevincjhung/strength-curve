@@ -1,4 +1,4 @@
-export const movements = [
+export const movementSeedData = [
   'arnold press',
   'assisted dip',
   'back squat',

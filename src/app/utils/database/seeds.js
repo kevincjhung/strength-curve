@@ -1,8 +1,7 @@
 import { prisma } from '../../../../prisma/prismaClient.js';
-import { movements } from '../../../../data/movementData.js'
+import { movementSeedData } from '../../../../data/movementData.js'
 import { userSeedData } from '../../../../data/userData.js';
 import { upper_lower_4_day } from '../../../../data/workoutPlanData.js';
-import { resetAppDataTables } from './queries.js';
 import { insertUsers } from './queries.js';
 
 
@@ -26,7 +25,6 @@ export async function seedUsers() {
 }
 
 
-
 /**
  * Seeds the database with movement data.
  * 
@@ -38,13 +36,29 @@ export async function seedUsers() {
  * @returns {Promise<void>} Resolves when movements are successfully seeded.
  * @throws {Error} Logs an error if the seeding process fails.
  */
+// export async function seedMovements() {
+//   try {
+//     await Promise.all(movements.map((movement, i) => {
+//       return prisma.movement.create({
+//         data: {
+//           name: movement,
+//           id: i + 1
+//         },
+//       });
+//     }));
+//   } catch (error) {
+//     console.error('Error seeding movements:', error);
+//   }
+// }
+
+
 export async function seedMovements() {
   try {
-    await Promise.all(movements.map((movement, i) => {
+    await Promise.all(movementSeedData.map((movement, i) => {
       return prisma.movement.create({
         data: {
           name: movement,
-          id: i + 1
+          // id: i + 1
         },
       });
     }));
@@ -54,6 +68,16 @@ export async function seedMovements() {
 }
 
 
+
+
+
+
+
+
+
+
+
+
 // Utility function to fetch movements and create a map of names to IDs
 async function getMovementIdMap() {
   const movements = await prisma.movement.findMany();
@@ -61,14 +85,17 @@ async function getMovementIdMap() {
 }
 
 
+/**
+ * Seeds database with static preset workout plan. 
+ * 
+ * TODO: To be refactored into queries.js file AFTER MVP. As there is currently no feature to add workout_plan from UI
+ * 
+ * @returns 
+ */
 export async function seedWorkoutPlans() {
   try {
-    // TODO: factor out function that inserts workoutPlanData. the function will be called by both seedDatabase.js and API route
-  
-
-    // TODO: dymanic userId after auth is implemented
-    const userId = 2; // Default userId fallback for standalone script
-
+    const userId = 2; // Dynamic Id to be implemented after MVP
+    
     // Fetch movement ID map
     const movementIdMap = await getMovementIdMap();
 
@@ -98,18 +125,4 @@ export async function seedWorkoutPlans() {
   } catch (error) {
     console.error(error);
   }
-}
-
-/**
- * TODO: 
- * Seeds database completely, including your current training plan, and mockup training-log data.
- * 
- * ! IMPORTANT: Will wipe existing data in database before seeding everything
- * 
- * @returns 
- */
-export async function seedAll() {
-  await resetAppDataTables();
-
-  return 
 }

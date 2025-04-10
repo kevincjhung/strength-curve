@@ -1,5 +1,7 @@
 /**
- * Static workout_plan data. This will be written into the database eventually.
+ * Static workout_plan data. 
+ * This will be written into the database eventually.
+ * For now, enter programs here manually, there may be more than 1 program in this file
  */
 
 
