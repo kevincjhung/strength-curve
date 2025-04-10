@@ -5,10 +5,11 @@ import { NextResponse } from 'next/server';
 
 export async function GET(req) {
   try {
-    // Fetch all users from the User table
+    // Fetch all movements from the User table
     const movements = await prisma.movement.findMany({
       orderBy: { name: 'asc' },
     });
+    
     // Return the users as a JSON response using NextResponse
     return NextResponse.json(movements);
   } catch (error) {
