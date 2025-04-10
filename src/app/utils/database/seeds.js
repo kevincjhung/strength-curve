@@ -3,12 +3,11 @@ import { movements } from '../../../../data/movementData.js'
 import { userSeedData } from '../../../../data/userData.js';
 import { upper_lower_4_day } from '../../../../data/workoutPlanData.js';
 import { resetAppDataTables } from './queries.js';
+import { insertUsers } from './queries.js';
 
 
 
 /**
- * Seeds the database with user data.
- * 
  * Inserts predefined user data into the database using Prisma's `createMany` method.
  *
  * @async
@@ -18,16 +17,14 @@ import { resetAppDataTables } from './queries.js';
  */
 export async function seedUsers() {
   try {
-    console.log(userSeedData)
-    await prisma.user.createMany({
-      data: userSeedData
-    });
-    
+    insertUsers(userSeedData);
+
     console.log('Users seeded successfully.');
   } catch (error) {
     console.error('Error seeding users:', error);
   }
 }
+
 
 
 /**
