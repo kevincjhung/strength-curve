@@ -1,13 +1,11 @@
 import { PrismaClient } from '@prisma/client';
-import { resetAppDataTables } from '@/app/utils/database/queries'
-import { seedMovements } from '@/app/utils/database/seeds'
+import { resetAppDataTables, insertMovements, getMovements } from '@/app/utils/database/queries';
 
 
 const prisma = new PrismaClient();
 
 beforeAll(async () => {
   await resetAppDataTables();
-  await seedMovements();
 });
 
 afterAll(async () => {
@@ -18,11 +16,26 @@ afterAll(async () => {
   }
 });
 
+
 it('should insert movements correctly', async () => {
-  const results = await seedMovements();
+  const data = [
+    { name: 'arnold press' },
+    { name: 'assisted dip' },
+    { name: 'back squat' }
+  ];
 
-  
-  console.log(results)
-  expect(1).toBe(1);
+  await insertMovements(data);
+  const movements = await getMovements();
+
+  // Check count
+  expect(movements.length).toBe(3);
+
+  // Sort both arrays by name to ensure consistent order before comparing
+  const sortedInput = [...data].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedOutput = [...movements].sort((a, b) => a.name.localeCompare(b.name));
+
+  // Check that each inserted name matches the returned name
+  sortedInput.forEach((movement, index) => {
+    expect(sortedOutput[index].name).toBe(movement.name);
+  });
 });
-

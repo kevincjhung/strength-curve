@@ -1,8 +1,11 @@
+// Library Imports
 import { prisma } from '../../../../prisma/prismaClient.js';
+import { insertUsers } from './queries.js';
+
+// Static Mock Data Imports 
 import { movementSeedData } from '../../../../data/movementData.js'
 import { userSeedData } from '../../../../data/userData.js';
 import { upper_lower_4_day } from '../../../../data/workoutPlanData.js';
-import { insertUsers } from './queries.js';
 
 
 
@@ -17,8 +20,6 @@ import { insertUsers } from './queries.js';
 export async function seedUsers() {
   try {
     insertUsers(userSeedData);
-
-    console.log('Users seeded successfully.');
   } catch (error) {
     console.error('Error seeding users:', error);
   }
@@ -36,29 +37,12 @@ export async function seedUsers() {
  * @returns {Promise<void>} Resolves when movements are successfully seeded.
  * @throws {Error} Logs an error if the seeding process fails.
  */
-// export async function seedMovements() {
-//   try {
-//     await Promise.all(movements.map((movement, i) => {
-//       return prisma.movement.create({
-//         data: {
-//           name: movement,
-//           id: i + 1
-//         },
-//       });
-//     }));
-//   } catch (error) {
-//     console.error('Error seeding movements:', error);
-//   }
-// }
-
-
 export async function seedMovements() {
   try {
-    await Promise.all(movementSeedData.map((movement, i) => {
+    await Promise.all(movementSeedData.map((movement) => {
       return prisma.movement.create({
         data: {
           name: movement,
-          // id: i + 1
         },
       });
     }));
@@ -66,16 +50,7 @@ export async function seedMovements() {
     console.error('Error seeding movements:', error);
   }
 }
-
-
-
-
-
-
-
-
-
-
+// TODO: Refactor prisma code to queries.js
 
 
 // Utility function to fetch movements and create a map of names to IDs
@@ -88,17 +63,16 @@ async function getMovementIdMap() {
 /**
  * Seeds database with static preset workout plan. 
  * 
- * TODO: To be refactored into queries.js file AFTER MVP. As there is currently no feature to add workout_plan from UI
  * 
  * @returns 
- */
+*/
 export async function seedWorkoutPlans() {
   try {
     const userId = 2; // Dynamic Id to be implemented after MVP
     
     // Fetch movement ID map
     const movementIdMap = await getMovementIdMap();
-
+    
     const newWorkoutPlan = await prisma.workoutPlan.create({
       data: {
         name: "JN Upper Lower 4 Day Version 1",
@@ -120,9 +94,10 @@ export async function seedWorkoutPlans() {
         },
       },
     });
-
+    
     return newWorkoutPlan;
   } catch (error) {
     console.error(error);
   }
 }
+// TODO: To be refactored into queries.js file AFTER MVP. As there is currently no feature to add workout_plan from UI

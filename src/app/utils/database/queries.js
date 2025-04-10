@@ -78,7 +78,7 @@ export async function insertUsers(users) {
  */
 export async function insertMovements (movementData){
  try {
-    await Promise.all(movementSeedData.map(movement => {
+    await Promise.all(movementData.map(movement => {
       return prisma.movement.create({
         data: movement,
       });
@@ -87,4 +87,16 @@ export async function insertMovements (movementData){
     console.error('Error inserting movementSeedData:', error);
     throw error; // Re-throw the error for the caller to handle
   }
+}
+
+/**
+ * Returns a list of movements from the database.
+ * @returns Array of movements in ascending order by name
+ */
+export async function getMovements() {
+  const movements = await prisma.movement.findMany({
+    orderBy: { name: 'asc' },
+  });
+
+  return movements;
 }
