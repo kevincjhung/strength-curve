@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-import { resetAppDataTables, insertUsers } from '@/app/utils/database/queries'
-import { seedUsers } from '@/app/utils/database/seeds'
-
+import { resetAppDataTables } from '@/app/database/queries/db_utils'
+import { insertUsers } from '@/app/database/queries/users_queries.js'
+import { seedUsers } from '@/app/database/seeds'
 
 const prisma = new PrismaClient();
 

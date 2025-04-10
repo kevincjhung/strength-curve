@@ -1,11 +1,11 @@
 // Library Imports
-import { prisma } from '../../../../prisma/prismaClient.js';
-import { insertUsers } from './queries.js';
+import { prisma } from '../../../prisma/prismaClient.js';
+import { insertUsers } from './queries/users_queries.js';
 
 // Static Mock Data Imports 
-import { movementSeedData } from '../../../../data/movementData.js'
-import { userSeedData } from '../../../../data/userData.js';
-import { upper_lower_4_day } from '../../../../data/workoutPlanData.js';
+import { movementSeedData } from '../../../mockData/movementData.js'
+import { userSeedData } from '../../../mockData/userData.js';
+import { upper_lower_4_day } from '../../../mockData/workoutPlanData.js';
 
 
 
@@ -75,7 +75,7 @@ export async function seedWorkoutPlans() {
     
     const newWorkoutPlan = await prisma.workoutPlan.create({
       data: {
-        name: "JN Upper Lower 4 Day Version 1",
+        name: "Upper Lower 4 Day",
         description: "A general all-encompassing upper/lower split strength/hypertrophy program focusing on the major lifts",
         userId: userId || 2, // Default userId fallback
         workouts: {

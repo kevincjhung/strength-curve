@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { resetAppDataTables, insertMovements, getMovements } from '@/app/utils/database/queries';
+import { resetAppDataTables } from '@/app/database/queries/db_utils'
+import { insertMovements, getMovements } from '@/app/database/queries/movements_queries'
 
 
 const prisma = new PrismaClient();

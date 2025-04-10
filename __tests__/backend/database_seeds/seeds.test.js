@@ -1,7 +1,8 @@
 import { PrismaClient } from '@prisma/client';
-import { resetAppDataTables } from '@/app/utils/database/queries'
-import { seedMovements } from '@/app/utils/database/seeds';
-import { getMovements } from '@/app/utils/database/queries';
+import { resetAppDataTables } from '@/app/database/queries/db_utils'
+import { getMovements } from '@/app/database/queries/movements_queries'
+import { seedMovements } from '@/app/database/seeds.js'
+
 
 const prisma = new PrismaClient();
 
